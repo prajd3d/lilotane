@@ -1,0 +1,86 @@
+(define (domain d3d)
+    (:requirements :typing :hierachie)
+    (:types
+        robot - object
+        part - object
+        location - object
+    )
+    (:predicates
+        (part-at ?p - part ?loc - location)
+        (robot-at ?r - robot ?loc - location)
+        (robot-empty ?r - robot)
+    )
+
+    (:task move_part_t
+        :parameters (?p - part ?loc - location)
+    )
+    (:task move_robot_t
+        :parameters (?r - part ?dest - location)
+    )
+
+    ; What to do when, robot is not at destination
+    (:method m0_move_robot
+        :parameters (?r - robot ?curr - location ?dest - location)
+        :task (move_robot_t ?r ?dest)
+        :precondition (and
+            (not (robot-at ?r ?dest))
+            (robot-at ?r ?curr))
+        :ordered-subtasks (and
+            (move_robot ?r ?curr ?dest)
+        )
+    )
+    ; What to do when, robot is at destination
+    (:method m1_move_robot
+        :parameters (?r - robot ?dest - location)
+        :task (move_robot_t ?r ?dest)
+        :precondition (and (robot-at ?r ?dest))
+        :ordered-subtasks ()
+    )
+
+    ; What to do when, part is not at destination
+    (:method m0_move_part
+        :parameters (?p - part ?r - robot ?part_loc - location ?dest - location)
+        :task (move_part_t ?p ?dest)
+        :precondition (and (part-at ?p ?part_loc))
+        :ordered-subtasks (and
+            (t1 (move_robot_t ?r ?part_loc))
+            (t2 (pick ?p ?r ?part_loc))
+            (t3 (move_robot_t ?r ?dest))
+            (t4 (drop ?p ?r ?dest))
+            )
+    )
+
+    ; What to do when, part is already at destination
+    (:method m1_move_part
+        :parameters (?p - part ?dest - location)
+        :task (move_part_t ?p ?dest)
+        :precondition (and (part-at ?p ?dest))
+        :ordered-subtasks ()
+    )
+
+    (:action pick
+        :parameters (?p - part ?r - robot ?loc - location)
+        :precondition (and
+            (part-at ?p ?loc)
+            (robot-at ?r ?loc)
+            (robot-empty ?r))
+        :effect (and
+            (not (part-at ?p ?loc))
+            (not (robot-empty ?r))
+            )
+    )
+
+    (:action move_robot
+        :parameters (?r - robot ?loc_curr - location ?loc_dst - location)
+        :precondition (and (robot-at ?r ?loc_curr) (not (robot-at ?r ?loc_dst)))
+        :effect (and (robot-at ?r ?loc_dst))
+    )
+    (:action drop
+        :parameters (?p - part ?r - robot ?loc - location)
+        :precondition (and (robot-at ?r ?loc))
+        :effect (and
+            (robot-empty ?r)
+            (part-at ?p ?loc)
+            )
+    )
+)

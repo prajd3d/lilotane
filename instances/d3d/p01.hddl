@@ -1,0 +1,18 @@
+(define (problem p01)
+(:domain d3d)
+(:requirements :typing :hierachie)
+(:objects
+r1 - robot
+p1 - part
+l1 l2 - location
+)
+(:htn :parameters () :ordered-subtasks (and
+(task1 (move_part_t p1 l2))
+))
+
+(:init
+(robot-at r1 l2)
+(part-at p1 l1)
+(robot-empty r1)
+)
+)
