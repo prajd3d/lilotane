@@ -1,0 +1,19 @@
+(define (problem p01)
+(:domain d3d)
+(:requirements :typing :hierachie)
+(:objects
+r1 - robot
+p1 - part
+t1 - table
+t2 - table
+)
+(:htn :parameters () :ordered-subtasks (and
+(task1 (pick_drop p1 t2))
+))
+
+(:init
+    (robot-at r1 t2)
+    (table-has t1 p1)
+    (robot-empty r1)
+)
+)

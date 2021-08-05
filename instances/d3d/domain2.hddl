@@ -1,0 +1,93 @@
+(define (domain d3d)
+    (:requirements :typing :hierachie)
+    (:types
+        robot - object
+        part - object
+        table - object
+        single-part - part
+        multi-part - part
+    )
+
+    (:predicates
+        (table-has ?t - table ?p - part)
+        (robot-has ?r - robot ?p - part)
+        (robot-at ?r - robot ?loc - object)
+        (robot-empty ?r - robot)
+    )
+
+    (:task move_robot_t
+        :parameters (?r - robot ?loc - object)
+    )
+
+    (:task pick_drop
+        :parameters (?p - part ?loc - object)
+    )
+
+    (:method m0_move_robot_t
+        :parameters (?r - robot ?curr_loc ?loc - object)
+        :task (move_robot_t ?r ?loc)
+        :precondition (and
+            (robot-at ?r ?loc)
+        )
+        :ordered-subtasks ()
+    )
+    (:method m1_move_robot_t
+        :parameters (?r - robot ?curr_loc ?loc - object)
+        :task (move_robot_t ?r ?loc)
+        :precondition (and
+            (robot-at ?r ?curr_loc)
+            (not (robot-at ?r ?loc))
+        )
+        :ordered-subtasks (and
+            (t0 (move_robot ?r ?curr_loc ?loc))
+        )
+    )
+
+    (:method m0_pick_drop
+        :parameters (?p - part ?loc - object ?r - robot ?t - object)
+        :task (pick_drop ?p ?loc)
+        :precondition (and
+            (table-has ?t ?p)
+        )
+        :ordered-subtasks (and
+            (t0 (move_robot_t ?r ?t))
+            (t1 (pick ?p ?r ?t))
+            (t2 (move_robot_t ?r ?loc))
+            (t3 (drop ?p ?r ?loc))
+        )
+    )
+
+    (:action pick
+        :parameters (?p - part ?r - robot ?t - table)
+        :precondition (and
+            (table-has ?t ?p)
+            (robot-at ?r ?t)
+            (robot-empty ?r))
+        :effect (and
+            (not (table-has ?t ?p))
+            (robot-has ?r ?p)
+            (not (robot-empty ?r))
+            )
+    )
+
+    (:action move_robot
+        :parameters (?r - robot ?loc_curr ?loc_dst - object)
+        :precondition (and (robot-at ?r ?loc_curr))
+        :effect (and
+            (robot-at ?r ?loc_dst)
+            (not (robot-at ?r ?loc_curr))
+            )
+    )
+
+    (:action drop
+        :parameters (?p - part ?r - robot ?loc - object)
+        :precondition (and
+            (robot-has ?r ?p)
+            (robot-at ?r ?loc)
+            )
+        :effect (and
+            (robot-empty ?r)
+            (not (robot-has ?r ?p))
+            )
+    )
+)
