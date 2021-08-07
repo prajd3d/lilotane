@@ -66,7 +66,7 @@
             (robot-empty ?r))
         :effect (and
             (not (part-at ?p ?loc))
-            (not (robot-empty ?r))
+            ;(not (robot-empty ?r))
             )
     )
 

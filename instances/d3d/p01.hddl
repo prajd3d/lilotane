@@ -3,16 +3,18 @@
 (:requirements :typing :hierachie)
 (:objects
 r1 - robot
-p1 - part
+p1 p2 - part
 l1 l2 - location
 )
 (:htn :parameters () :ordered-subtasks (and
 (task1 (move_part_t p1 l2))
+(task2 (move_part_t p2 l2))
 ))
 
 (:init
 (robot-at r1 l2)
 (part-at p1 l1)
+(part-at p2 l1)
 (robot-empty r1)
 )
 )
